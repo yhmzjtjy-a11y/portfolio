@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500" role="img" aria-label="ESM 模块依赖图">
+  <defs>
+    <linearGradient id="esBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a1024"/>
+      <stop offset="1" stop-color="#14102e"/>
+    </linearGradient>
+    <radialGradient id="esGlow" cx="0.24" cy="0.76" r="0.46">
+      <stop offset="0" stop-color="#4fd1c5" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#4fd1c5" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="800" height="500" fill="url(#esBg)"/>
+  <rect width="800" height="500" fill="url(#esGlow)"/>
+
+  <g stroke="#ffffff" stroke-opacity="0.05">
+    <path d="M0 125h800M0 250h800M0 375h800"/>
+    <path d="M200 0v500M400 0v500M600 0v500"/>
+  </g>
+
+  <g stroke="#ffffff" stroke-opacity="0.26" stroke-width="2" fill="none">
+    <path d="M180 352 340 250 500 150"/>
+    <path d="M180 352 340 250 500 320"/>
+    <path d="M340 250 500 150"/>
+    <path d="M340 250 500 320"/>
+    <path d="M500 150 620 108"/>
+    <path d="M500 320 620 372"/>
+    <path d="M180 352 320 420"/>
+  </g>
+
+  <g>
+    <circle cx="180" cy="352" r="40" fill="#7c8cff"/>
+    <path d="M168 352h24M180 340v24" stroke="#0b0d14" stroke-width="4.5" stroke-linecap="round"/>
+    <circle cx="180" cy="352" r="52" fill="none" stroke="#7c8cff" stroke-opacity="0.35" stroke-width="2"/>
+  </g>
+  <g>
+    <circle cx="340" cy="250" r="34" fill="#a98bff"/>
+    <path d="M328 250l8 8 16-16" fill="none" stroke="#0b0d14" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g>
+    <circle cx="320" cy="420" r="24" fill="#4fd1c5" fill-opacity="0.9"/>
+  </g>
+  <g>
+    <circle cx="500" cy="150" r="30" fill="#4fd1c5"/>
+    <rect x="489" y="143" width="22" height="5" rx="2.5" fill="#06231f" opacity="0.8"/>
+    <rect x="489" y="153" width="14" height="5" rx="2.5" fill="#06231f" opacity="0.6"/>
+  </g>
+  <g>
+    <circle cx="500" cy="320" r="26" fill="#ffb86b" fill-opacity="0.9"/>
+    <rect x="491" y="315" width="18" height="5" rx="2.5" fill="#2a1c08" opacity="0.8"/>
+    <rect x="491" y="323" width="11" height="5" rx="2.5" fill="#2a1c08" opacity="0.6"/>
+  </g>
+  <g>
+    <circle cx="620" cy="108" r="20" fill="#7c8cff" fill-opacity="0.7"/>
+    <circle cx="620" cy="372" r="20" fill="#a98bff" fill-opacity="0.7"/>
+  </g>
+
+  <g transform="translate(560 228)">
+    <rect width="184" height="44" rx="14" fill="#ffffff" fill-opacity="0.07" stroke="#ffffff" stroke-opacity="0.16"/>
+    <text x="92" y="28" text-anchor="middle" fill="#eef1f8" font-family="monospace" font-size="16">import / export</text>
+  </g>
+
+  <g fill="#ffffff" fill-opacity="0.4">
+    <circle cx="700" cy="446" r="3"/>
+    <circle cx="104" cy="112" r="4"/>
+  </g>
+</svg>

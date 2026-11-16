@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500" role="img" aria-label="冷启动速度环形仪表盘">
+  <defs>
+    <linearGradient id="spBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a1024"/>
+      <stop offset="1" stop-color="#151033"/>
+    </linearGradient>
+    <radialGradient id="spGlow" cx="0.5" cy="0.5" r="0.52">
+      <stop offset="0" stop-color="#7c8cff" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#7c8cff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="spArc" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7c8cff"/>
+      <stop offset="0.6" stop-color="#a98bff"/>
+      <stop offset="1" stop-color="#4fd1c5"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="500" fill="url(#spBg)"/>
+  <rect width="800" height="500" fill="url(#spGlow)"/>
+
+  <g stroke="#ffffff" stroke-opacity="0.05">
+    <path d="M0 125h800M0 250h800M0 375h800"/>
+    <path d="M200 0v500M400 0v500M600 0v500"/>
+  </g>
+
+  <g transform="translate(400 250)">
+    <circle r="168" fill="none" stroke="#ffffff" stroke-opacity="0.08" stroke-width="22"/>
+    <circle r="168" fill="none" stroke="url(#spArc)" stroke-width="22" stroke-linecap="round"
+            stroke-dasharray="480 1055" transform="rotate(-90)"/>
+    <circle r="128" fill="none" stroke="#ffffff" stroke-opacity="0.07" stroke-width="2" stroke-dasharray="3 10"/>
+    <g stroke="#ffffff" stroke-opacity="0.28" stroke-width="3" stroke-linecap="round">
+      <path d="M0 -196v-18M98 -170l9 -16M170 -98l16 -9M196 0h18M170 98l16 9M98 170l9 16M0 196v18M-98 170l-9 16M-170 98l-16 9M-196 0h-18M-170 -98l-16 -9M-98 -170l-9 -16"/>
+    </g>
+    <text y="-4" text-anchor="middle" fill="#eef1f8" font-family="monospace" font-size="46" font-weight="700">0.41s</text>
+    <text y="30" text-anchor="middle" fill="#ffffff" fill-opacity="0.45" font-family="monospace" font-size="14" letter-spacing="2">COLD START</text>
+  </g>
+
+  <g transform="translate(628 108)">
+    <path d="M0-34 22 6h-14l16 30-40-34h16L0-34Z" fill="#ffb86b"/>
+  </g>
+
+  <g fill="#ffffff" fill-opacity="0.4">
+    <circle cx="120" cy="392" r="4"/>
+    <circle cx="700" cy="392" r="3"/>
+  </g>
+</svg>

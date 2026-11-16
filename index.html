@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="no-js">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rivet · 零配置、秒级冷启动的前端构建工具</title>
+<meta name="description" content="Rivet 用 Rust 内核重写构建管线：冷启动 0.41 秒，热更新 16 毫秒，零配置开箱即用。支持 TypeScript、React、Vue、Tailwind 与 MDX。">
+<meta name="theme-color" content="#07080c">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<meta property="og:title" content="Rivet · 零配置、秒级冷启动的前端构建工具">
+<meta property="og:description" content="把 4 分钟的冷启动，压到 0.4 秒。">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="assets/css/style.css">
+<script>
+  (function () {
+    var d = document.documentElement;
+    d.classList.remove('no-js');
+    try {
+      var q = /[?&]theme=(dark|light)/.exec(location.search);
+      var t = q ? q[1] : localStorage.getItem('theme');
+      if (!t) t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      d.setAttribute('data-theme', t);
+      if (q) localStorage.setItem('theme', t);
+    } catch (e) { d.setAttribute('data-theme', 'dark'); }
+  })();
+</script>
+</head>
+<body data-page="home">
+
+<!-- ============================ icon sprite ============================ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <g id="i-sun"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></g>
+    <g id="i-moon"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></g>
+    <g id="i-menu"><path d="M4 7h16M4 12h16M4 17h16"/></g>
+    <g id="i-close"><path d="M6 6l12 12M18 6L6 18"/></g>
+    <g id="i-arrow-right"><path d="M5 12h14M13 6l6 6-6 6"/></g>
+    <g id="i-arrow-up-right"><path d="M7 17 17 7M8 7h9v9"/></g>
+    <g id="i-check"><path d="m5 13 4 4L19 7"/></g>
+    <g id="i-copy"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></g>
+    <g id="i-download"><path d="M12 3v12M7.5 11 12 15.5 16.5 11M4 20h16"/></g>
+    <g id="i-terminal"><path d="m5 7 4 4-4 4M12 15h7"/></g>
+    <g id="i-zap"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></g>
+    <g id="i-refresh"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v6h-6"/></g>
+    <g id="i-gear"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></g>
+    <g id="i-branch"><circle cx="6" cy="5" r="2.5"/><circle cx="6" cy="19" r="2.5"/><circle cx="18" cy="12" r="2.5"/><path d="M6 7.5v9M6 12h9.5"/></g>
+    <g id="i-chart"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></g>
+    <g id="i-puzzle"><path d="M9 4h6v2.5a2 2 0 1 0 4 0V4h1v6h-2.5a2 2 0 1 0 0 4H20v6h-6v-2.5a2 2 0 1 0-4 0V20H4v-6h2.5a2 2 0 1 0 0-4H4V4h5Z"/></g>
+    <g id="i-package"><path d="M21 8v8l-9 5-9-5V8l9-5 9 5Z"/><path d="m3 8 9 5 9-5M12 13v8"/></g>
+    <g id="i-book"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v16H6.5A2.5 2.5 0 0 0 4 20.5v-16Z"/><path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H20v4H6.5"/></g>
+    <g id="i-github"><path d="M9 19c-4.5 1.4-4.5-2.3-6-2.8m12 5v-3.6a3.1 3.1 0 0 0-.9-2.4c2.9-.3 6-1.4 6-6.4a5 5 0 0 0-1.4-3.5 4.6 4.6 0 0 0-.1-3.5s-1.1-.3-3.6 1.4a12.4 12.4 0 0 0-6.4 0C6 2.1 4.9 2.4 4.9 2.4a4.6 4.6 0 0 0-.1 3.5A5 5 0 0 0 3.4 9.4c0 5 3 6.1 5.9 6.4a3.1 3.1 0 0 0-.9 2.4V21"/></g>
+    <g id="i-chevron-down"><path d="m6 9 6 6 6-6"/></g>
+    <g id="i-info"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.6v.4"/></g>
+    <g id="i-link"><path d="M10.5 13.5a4 4 0 0 0 5.7 0l2.8-2.8a4 4 0 0 0-5.7-5.7L11.6 6.7"/><path d="M13.5 10.5a4 4 0 0 0-5.7 0l-2.8 2.8a4 4 0 1 0 5.7 5.7l1.7-1.7"/></g>
+    <g id="i-rss"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1.6"/></g>
+    <g id="i-discord"><path d="M8.5 8.5a13 13 0 0 1 7 0M9 15c1.8 1.2 4.2 1.2 6 0"/><path d="M7.5 5.5A15 15 0 0 1 12 4.5c1.6 0 3 .3 4.5 1l1 2.2a13 13 0 0 1 2.5 7.3c0 3.5-3.5 5.5-8 5.5s-8-2-8-5.5a13 13 0 0 1 2.5-7.3l1-2.2Z"/></g>
+  </defs>
+</svg>
+
+<!-- ============================ header ============================ -->
+<header class="site-header" id="siteHeader">
+  <div class="container nav">
+    <a class="brand" href="index.html" aria-label="Rivet 首页">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h9a4 4 0 0 1 0 8H8"/><path d="M4 16h9a4 4 0 0 0 0-8"/></svg>
+      </span>
+      <span>Rivet</span>
+      <span class="brand-ver">v2.4.0</span>
+    </a>
+
+    <nav aria-label="主导航">
+      <ul class="nav-links" id="navLinks">
+        <li><a class="nav-link" href="index.html#features">特性</a></li>
+        <li><a class="nav-link" href="index.html#bench">性能基准</a></li>
+        <li><a class="nav-link" href="index.html#quickstart">快速开始</a></li>
+        <li><a class="nav-link" href="index.html#plugins">插件</a></li>
+        <li><a class="nav-link" href="docs.html">文档</a></li>
+      </ul>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="icon-btn theme-toggle" id="themeToggle" type="button" aria-label="切换深色 / 浅色主题">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#i-sun"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#i-moon"/></svg>
+      </button>
+      <a class="btn btn-primary btn-sm nav-cta" href="docs.html#install">
+        快速开始
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-right"/></svg>
+      </a>
+      <button class="icon-btn nav-toggle" id="navToggle" type="button" aria-label="打开菜单" aria-expanded="false" aria-controls="navLinks">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#i-menu"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ============================ hero ============================ -->
+<section class="hero" id="hero">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <span class="eyebrow reveal">v2.4.0 · 稳定版已发布</span>
+
+      <h1 class="hero-title reveal d1">
+        <span class="line">把 4 分钟冷启动</span>
+        <span class="line">压到 <span class="grad-text">0.4 秒</span></span>
+      </h1>
+
+      <p class="hero-sub reveal d2">
+        Rivet 用 Rust 内核重写了构建管线：增量模块图 + 常驻编译守护进程，
+        冷启动中位 0.41 秒，热更新反馈 16 毫秒。零配置开箱即用，
+        TypeScript、JSX、CSS 全部按需转译。
+      </p>
+
+      <div class="hero-cta reveal d3">
+        <a class="btn btn-primary" href="docs.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#i-terminal"/></svg>
+          快速开始
+        </a>
+        <a class="btn btn-ghost" href="docs.html#install">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#i-download"/></svg>
+          下载
+        </a>
+      </div>
+
+      <div class="install reveal d3">
+        <code id="installCmd"><span class="p">$</span> npm i -g @rivet/cli</code>
+        <button class="copy-btn" type="button" data-copy="#installCmd">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#i-copy"/></svg>
+          <span>复制</span>
+        </button>
+      </div>
+
+      <div class="hero-meta reveal d4">
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> MIT 协议</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> 支持 Node 20+</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg> 零配置文件</span>
+      </div>
+
+      <div class="hero-stats reveal d4">
+        <div>
+          <div class="stat-num grad-text"><span class="counter" data-to="0.41" data-decimals="2" data-suffix="s">0</span></div>
+          <div class="stat-label">冷启动中位耗时</div>
+        </div>
+        <div>
+          <div class="stat-num grad-text"><span class="counter" data-to="16">0</span> ms</div>
+          <div class="stat-label">热更新反馈</div>
+        </div>
+        <div>
+          <div class="stat-num grad-text"><span class="counter" data-to="320">0</span> 万</div>
+          <div class="stat-label">每周下载量</div>
+        </div>
+        <div>
+          <div class="stat-num grad-text"><span class="counter" data-to="48">0</span> k</div>
+          <div class="stat-label">GitHub Star</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-visual reveal d2">
+      <div class="terminal">
+        <div class="terminal-bar">
+          <span class="terminal-dots"><i></i><i></i><i></i></span>
+          <span class="terminal-title">~/projects/my-app — rivet dev</span>
+        </div>
+        <div class="terminal-body">
+          <div class="term-line"><span class="prompt">$</span><span class="u">rivet dev</span></div>
+          <div class="term-line dim"> </div>
+          <div class="term-line ok"><span>rivet v2.4.0</span><span class="b">·</span><span class="a">rust core 1.92</span></div>
+          <div class="term-line ok"><span class="k">✓</span><span>依赖预构建完成</span><span class="dim">142ms</span></div>
+          <div class="term-line ok"><span class="k">✓</span><span>模块图已加载</span><span class="dim">38ms</span></div>
+          <div class="term-line ok"><span class="k">✓</span><span>监听 128 个文件</span><span class="dim">12ms</span></div>
+          <div class="term-line dim"> </div>
+          <div class="term-line"><span class="a">➜</span><span>Local:</span><span class="u">http://localhost:5173/</span></div>
+          <div class="term-line"><span class="a">➜</span><span>Network:</span><span class="u">http://192.168.1.24:5173/</span></div>
+          <div class="term-line"><span class="w">➜</span><span>ready in</span><span class="k">0.41s</span><span class="cursor"></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ wall ============================ -->
+<div class="wall">
+  <div class="container">
+    <div class="wall-label">已在以下团队的生产环境中运行</div>
+    <div class="wall-row">
+      <span>Northwind</span>
+      <span>Kite</span>
+      <span>Helio</span>
+      <span>Orbit Labs</span>
+      <span>Parsec</span>
+      <span>Vantage</span>
+      <span>Quill</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================ features ============================ -->
+<section class="section" id="features">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">核心特性</span>
+      <h2>把复杂度<span class="grad-text">藏进内核</span></h2>
+      <p>你只需要写代码。约定、转换、依赖图、HMR —— 全部由 Rivet 自己处理。</p>
+    </div>
+
+    <div class="grid-3">
+      <article class="feature reveal">
+        <div class="feature-art"><img src="assets/img/feature/config.svg" alt="零配置约定示意图" width="800" height="500" loading="lazy"></div>
+        <div class="feature-body">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-gear"/></svg></div>
+          <h3>零配置开箱即用</h3>
+          <p>没有 rivet.config.js，也没有需要你手动声明的插件列表。约定优于配置，clone 下来就能跑。</p>
+          <div class="feature-list"><span class="chip">自动探测</span><span class="chip">按需转译</span></div>
+          <div class="kicker">0 行配置即可启动</div>
+        </div>
+      </article>
+
+      <article class="feature reveal d1">
+        <div class="feature-art"><img src="assets/img/feature/speed.svg" alt="增量编译速度示意图" width="800" height="500" loading="lazy"></div>
+        <div class="feature-body">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-zap"/></svg></div>
+          <h3>增量编译引擎</h3>
+          <p>Rust 内核 + 常驻守护进程，只重算变更的模块子图。第二次启动直接命中磁盘缓存，几乎零成本。</p>
+          <div class="feature-list"><span class="chip">Rust 内核</span><span class="chip">磁盘缓存</span><span class="chip">并行转换</span></div>
+          <div class="kicker">缓存命中率 92%</div>
+        </div>
+      </article>
+
+      <article class="feature reveal d2">
+        <div class="feature-art"><img src="assets/img/feature/hmr.svg" alt="热更新示意图" width="800" height="500" loading="lazy"></div>
+        <div class="feature-body">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-refresh"/></svg></div>
+          <h3>16 毫秒热更新</h3>
+          <p>局部更新而非整页刷新，组件状态自动保留。React Fast Refresh 默认开启，Svelte 与 Vue 也已支持。</p>
+          <div class="feature-list"><span class="chip">状态保留</span><span class="chip">CSS 零延迟</span></div>
+          <div class="kicker">P99 延迟 24ms</div>
+        </div>
+      </article>
+
+      <article class="feature reveal">
+        <div class="feature-art"><img src="assets/img/feature/esm.svg" alt="ESM 模块图示意图" width="800" height="500" loading="lazy"></div>
+        <div class="feature-body">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-branch"/></svg></div>
+          <h3>原生 ESM 模块图</h3>
+          <p>严格遵循 import / export 语义，不做路径猜测。构建产物与源码一一对应，树摇更干净、调试更好定位。</p>
+          <div class="feature-list"><span class="chip">标准语义</span><span class="chip">精确溯源</span></div>
+          <div class="kicker">产物平均减少 11%</div>
+        </div>
+      </article>
+
+      <article class="feature reveal d1">
+        <div class="feature-art"><img src="assets/img/feature/analyzer.svg" alt="构建分析器示意图" width="800" height="500" loading="lazy"></div>
+        <div class="feature-body">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chart"/></svg></div>
+          <h3>可视化构建分析器</h3>
+          <p><code class="mono">rivet analyze</code> 打开火焰图，一眼看出哪个依赖吃掉了体积、哪段转换最耗时。</p>
+          <div class="feature-list"><span class="chip">火焰图</span><span class="chip">依赖树</span></div>
+          <div class="kicker">定位到单个模块</div>
+        </div>
+      </article>
+
+      <article class="feature reveal d2">
+        <div class="feature-art"><img src="assets/img/feature/plugins.svg" alt="插件生态示意图" width="800" height="500" loading="lazy"></div>
+        <div class="feature-body">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-puzzle"/></svg></div>
+          <h3>120+ 官方插件</h3>
+          <p>React、Vue、Svelte、Tailwind、MDX、SWC、Docker 镜像……全部经过官方测试矩阵，可放心用于生产。</p>
+          <div class="feature-list"><span class="chip">官方维护</span><span class="chip">语义化版本</span></div>
+          <div class="kicker">社区插件 340+</div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ benchmark ============================ -->
+<section class="section" id="bench">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">性能基准</span>
+      <h2>和主流工具<span class="grad-text">同一把尺子量</span></h2>
+      <p>在同一个 4200 个模块的中型项目上跑 30 次取中位数，全部跑在 GitHub Actions 标准 Linux runner 上。</p>
+    </div>
+
+    <div class="table-scroll reveal d1">
+      <div class="table-wrap">
+        <table class="bench">
+          <thead>
+            <tr>
+              <th>指标</th>
+              <th class="col-hero">Rivet</th>
+              <th>Vite</th>
+              <th>webpack</th>
+              <th>esbuild</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>冷启动（中位）</td><td class="win col-hero">0.41s</td><td>1.24s</td><td>8.60s</td><td>0.72s</td></tr>
+            <tr><td>二次启动（命中缓存）</td><td class="win col-hero">0.08s</td><td>0.31s</td><td>3.40s</td><td>0.19s</td></tr>
+            <tr><td>热更新反馈（中位）</td><td class="win col-hero">16ms</td><td>92ms</td><td>1.20s</td><td>48ms</td></tr>
+            <tr><td>生产构建</td><td>11.4s</td><td>18.2s</td><td>42.5s</td><td class="win">6.1s</td></tr>
+            <tr><td>峰值内存</td><td class="win col-hero">218MB</td><td>512MB</td><td>1.4GB</td><td>96MB</td></tr>
+            <tr><td>所需配置项</td><td class="win col-hero">0</td><td>3</td><td>12</td><td>2</td></tr>
+            <tr><td>产物体积（gzip）</td><td class="win col-hero">42.8KB</td><td>47.5KB</td><td>51.2KB</td><td>44.1KB</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="scroll-hint" data-scroll-hint>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6l-4 4 4 4M16 6l4 4-4 4"/></svg>
+        左右滑动查看完整对比数据
+      </p>
+    </div>
+    <p class="bench-note reveal d2">
+      * esbuild 不支持 HMR 与完整框架插件，因此热更新与配置项一列不参与对比。测试脚本见仓库 <code class="mono">bench/</code> 目录。
+    </p>
+  </div>
+</section>
+
+<!-- ============================ quickstart ============================ -->
+<section class="section" id="quickstart">
+  <div class="container">
+    <div class="section-head center reveal">
+      <span class="eyebrow">快速开始</span>
+      <h2>三步，<span class="grad-text">跑起来</span></h2>
+      <p>不需要先读文档。复制粘贴这三条命令，你的前端服务器已经在跑了。</p>
+    </div>
+
+    <div class="steps reveal d1">
+      <article class="step">
+        <h3>安装 CLI</h3>
+        <p>需要 Node 20 或更高版本。也提供独立二进制，不装 Node 也能用。</p>
+        <pre class="code-block"><div class="code-body"><span class="p">$</span> npm i -g @rivet/cli</div></pre>
+      </article>
+
+      <article class="step">
+        <h3>创建项目</h3>
+        <p>交互式选择模板，React / Vue / Svelte / 纯 TS 都可以。</p>
+        <pre class="code-block"><div class="code-body"><span class="p">$</span> rivet init my-app</div></pre>
+      </article>
+
+      <article class="step">
+        <h3>启动开发服务器</h3>
+        <p>自动打开浏览器，热更新开箱即用，不需要额外配置。</p>
+        <pre class="code-block"><div class="code-body"><span class="p">$</span> rivet dev</div></pre>
+      </article>
+    </div>
+
+    <div class="grid-2" style="margin-top:1.6rem">
+      <div class="code-block reveal d2">
+        <div class="code-head"><span>rivet.config.ts</span><span>可选</span></div>
+        <div class="code-body">
+          <span class="k">import</span> { defineConfig } <span class="k">from</span> <span class="s">'@rivet/cli'</span>
+          <br><br>
+          <span class="k">export default</span> <span class="f">defineConfig</span>({
+          <br>&nbsp;&nbsp;plugins: [<span class="s">'@rivet/plugin-react'</span>, <span class="s">'@rivet/plugin-tailwind'</span>],
+          <br>&nbsp;&nbsp;build: {
+          <br>&nbsp;&nbsp;&nbsp;&nbsp;target: <span class="s">'es2022'</span>,
+          <br>&nbsp;&nbsp;&nbsp;&nbsp;sourcemap: <span class="n">true</span>,
+          <br>&nbsp;&nbsp;},
+          <br>})
+        </div>
+      </div>
+
+      <div class="code-block reveal d3">
+        <div class="code-head"><span>terminal</span><span>输出</span></div>
+        <div class="code-body">
+          <span class="p">$</span> rivet build
+          <br><br>
+          <span class="c">rivet v2.4.0 · rust core 1.92</span>
+          <br><span class="k">✓</span> 4201 modules transformed
+          <br><span class="k">✓</span> assets inlined&nbsp;&nbsp;<span class="c">1.2s</span>
+          <br><span class="k">✓</span> output written&nbsp;&nbsp;<span class="c">11.4s</span>
+          <br><br>
+          <span class="c">dist/</span>
+          <br>&nbsp;&nbsp;├─ assets/&nbsp;&nbsp;<span class="c">index-8f2a1c.js&nbsp;&nbsp;42.8KB</span>
+          <br>&nbsp;&nbsp;└─ index.html&nbsp;&nbsp;<span class="c">1.4KB</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ plugins ============================ -->
+<section class="section" id="plugins">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">插件生态</span>
+      <h2>要什么，<span class="grad-text">装什么</span></h2>
+      <p>每个插件都是一个独立包，按需安装即可，Rivet 会自动读取并注册。</p>
+    </div>
+
+    <div class="grid-3">
+      <article class="feature reveal">
+        <div class="feature-body">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-puzzle"/></svg></div>
+          <h3>@rivet/plugin-react</h3>
+          <p>React 19 与 18 全支持，内置 Fast Refresh 与自动 JSX runtime。</p>
+          <div class="kicker">最新 2.4.1 · 周下载 210 万</div>
+        </div>
+      </article>
+
+      <article class="feature reveal d1">
+        <div class="feature-body">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-puzzle"/></svg></div>
+          <h3>@rivet/plugin-vue</h3>
+          <p>Vue 3 SFC 编译与热更新，支持 script setup 类型检查。</p>
+          <div class="kicker">最新 1.9.0 · 周下载 96 万</div>
+        </div>
+      </article>
+
+      <article class="feature reveal d2">
+        <div class="feature-body">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-puzzle"/></svg></div>
+          <h3>@rivet/plugin-svelte</h3>
+          <p>Svelte 5 编译，含 HMR 与 SSR 构建预设。</p>
+          <div class="kicker">最新 1.3.2 · 周下载 41 万</div>
+        </div>
+      </article>
+
+      <article class="feature reveal">
+        <div class="feature-body">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-puzzle"/></svg></div>
+          <h3>@rivet/plugin-tailwind</h3>
+          <p>Tailwind v4 自动探测与扫描，跳过 PostCSS 链路的额外开销。</p>
+          <div class="kicker">最新 2.0.0 · 周下载 180 万</div>
+        </div>
+      </article>
+
+      <article class="feature reveal d1">
+        <div class="feature-body">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-puzzle"/></svg></div>
+          <h3>@rivet/plugin-mdx</h3>
+          <p>MDX 编译与热更新，支持自定义组件映射表。</p>
+          <div class="kicker">最新 1.2.4 · 周下载 33 万</div>
+        </div>
+      </article>
+
+      <article class="feature reveal d2">
+        <div class="feature-body">
+          <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-puzzle"/></svg></div>
+          <h3>@rivet/plugin-swc</h3>
+          <p>可选的 SWC 后端，大型仓库里能再快 35%。</p>
+          <div class="kicker">最新 1.1.0 · 周下载 58 万</div>
+        </div>
+      </article>
+    </div>
+
+    <div style="margin-top:2.4rem;text-align:center" class="reveal d3">
+      <a class="btn btn-ghost" href="docs.html#plugins">
+        查看全部 120+ 个插件
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-right"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ roadmap ============================ -->
+<section class="section" id="roadmap">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">路线图</span>
+      <h2>接下来<span class="grad-text">在做什么</span></h2>
+      <p>Rivet 每两周发布一次小版本，每季度发布一次带破坏性变更的大版本。</p>
+    </div>
+
+    <div class="timeline reveal d1">
+      <article class="tl-item done">
+        <div class="tl-date">2026 Q3 · 已交付</div>
+        <h3>Rust 转换引擎 v2 <span class="chip">v2.4.0</span></h3>
+        <p>重写 TypeScript 与 JSX 解析层，转换速度提升 2.4 倍，同时把常驻守护进程的内存占用压到 218MB。</p>
+      </article>
+
+      <article class="tl-item">
+        <div class="tl-date">2026 Q4 · 开发中</div>
+        <h3>团队远程缓存 <span class="chip">预览版</span></h3>
+        <p>CI 与本地共享同一份构建产物缓存，新同事拉下仓库第一次启动也能在 0.3 秒内进入开发。</p>
+      </article>
+
+      <article class="tl-item">
+        <div class="tl-date">2027 Q1 · 计划中</div>
+        <h3>官方镜像与部署模板 <span class="chip">未开始</span></h3>
+        <p>提供 rivet/runtime 基础镜像与 Docker、Fly、Vercel 三套一键部署模板，产物默认开启 gzip 与 brotli。</p>
+      </article>
+
+      <article class="tl-item">
+        <div class="tl-date">2027 Q2 · 探索中</div>
+        <h3>基于构建图的优化建议 <span class="chip">研究阶段</span></h3>
+        <p>分析模块依赖图，指出可拆分、可并行、可替换的环节，并给出具体的重构建议与预期收益。</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ faq ============================ -->
+<section class="section" id="faq">
+  <div class="container">
+    <div class="section-head center reveal">
+      <span class="eyebrow">常见问题</span>
+      <h2>你可能<span class="grad-text">想问的</span></h2>
+    </div>
+
+    <div class="faq reveal d1" id="faqList">
+      <div class="faq-item">
+        <button class="faq-q" type="button" aria-expanded="false">
+          Rivet 和 Vite 的核心区别是什么？
+          <span class="caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chevron-down"/></svg></span>
+        </button>
+        <div class="faq-a"><div><p>
+          两者都在开发期用原生 ESM，但管线内核不同。Vite 依赖 Node 侧的模块图与 esbuild 预构建，
+          Rivet 把整个模块图与转换器都放在常驻的 Rust 进程里，因此冷启动更稳、热更新延迟更低；
+          代价是 Rivet 目前只覆盖主流前端框架，插件生态规模也小于 Vite。
+        </p></div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" type="button" aria-expanded="false">
+          支持哪些 Node.js 版本？
+          <span class="caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chevron-down"/></svg></span>
+        </button>
+        <div class="faq-a"><div><p>
+          需要 Node.js 20.6 或更高版本（20.x、22.x、24.x 均在持续测试矩阵中）。
+          如果你不希望安装 Node，也可以直接下载独立二进制包 —— 它内置了运行时，打包体积约 8MB。
+        </p></div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" type="button" aria-expanded="false">
+          可以和现有的 webpack 项目混用吗？
+          <span class="caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chevron-down"/></svg></span>
+        </button>
+        <div class="faq-a"><div><p>
+          可以。Rivet 提供 @rivet/plugin-webpack-bridge，可以在 Rivet 的开发服务器里复用既有的 webpack loader。
+          官方建议新项目直接用 Rivet，老项目先在分支上试跑一个迭代再决定是否迁移。
+        </p></div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" type="button" aria-expanded="false">
+          生产构建稳定吗？
+          <span class="caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chevron-down"/></svg></span>
+        </button>
+        <div class="faq-a"><div><p>
+          2.x 以来生产构建已经稳定运行，Rivet 官方维护的 40 多个开源项目全部用它出包。
+          产物遵循标准 ESM 语义，压缩、sourcemap、代码分割与 chunk 命名都可以通过配置覆盖。
+        </p></div></div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" type="button" aria-expanded="false">
+          怎么写一个插件？
+          <span class="caret"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-chevron-down"/></svg></span>
+        </button>
+        <div class="faq-a"><div><p>
+          插件就是一个导出 definePlugin() 的函数，钩子在转换、加载、解析三个阶段触发，
+          API 文档见 docs.html#plugin-api。最简单的插件只要十几行，
+          官方也提供了一套 @rivet/plugin-starter 模板。
+        </p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ cta ============================ -->
+<section class="section" id="get-started">
+  <div class="container">
+    <div class="cta-panel reveal">
+      <div class="cta-grid">
+        <div>
+          <span class="eyebrow">开始使用</span>
+          <h2>下一条命令，<span class="grad-text">就是 0.4 秒</span></h2>
+          <p>无需注册账号，无需配置密钥。装上 CLI 就能跑；订阅更新则能第一时间收到新版本与破坏性变更提醒。</p>
+
+          <div class="dl-grid" style="margin-top:1.8rem">
+            <div class="dl-card">
+              <span class="os"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-package"/></svg></span>
+              <div><b>npm 包</b><span>@rivet/cli · v2.4.0</span></div>
+            </div>
+            <div class="dl-card">
+              <span class="os"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-download"/></svg></span>
+              <div><b>独立二进制</b><span>linux · macos · 8MB</span></div>
+            </div>
+            <div class="dl-card">
+              <span class="os"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-github"/></svg></span>
+              <div><b>源码</b><span>MIT · 48k star</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <form class="subscribe" id="subscribeForm" novalidate>
+            <input type="email" id="subEmail" placeholder="输入邮箱订阅版本更新" aria-label="邮箱地址" autocomplete="email">
+            <button class="btn btn-primary" type="submit">
+              订阅更新
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-arrow-right"/></svg>
+            </button>
+          </form>
+          <p class="subscribe-note" id="subNote">每月一封，只发版本更新与破坏性变更说明，随时可退订。</p>
+
+          <div class="cta-actions">
+            <a class="btn btn-ghost" href="docs.html">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#i-book"/></svg>
+              阅读文档
+            </a>
+            <a class="btn btn-ghost" href="#faq">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><use href="#i-discord"/></svg>
+              加入社区
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============================ footer ============================ -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-top">
+      <div>
+        <a class="brand" href="index.html">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h9a4 4 0 0 1 0 8H8"/><path d="M4 16h9a4 4 0 0 0 0-8"/></svg>
+          </span>
+          <span>Rivet</span>
+        </a>
+        <p class="muted" style="margin-top:0.9rem;max-width:30rem;font-size:0.9rem">
+          零配置、秒级冷启动的前端构建工具。用 Rust 内核重写构建管线，把复杂度留给机器。
+        </p>
+        <div class="socials" style="margin-top:1.2rem">
+          <a href="#" aria-label="GitHub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-github"/></svg></a>
+          <a href="#" aria-label="更新订阅"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-rss"/></svg></a>
+          <a href="#" aria-label="社区"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-discord"/></svg></a>
+          <a href="docs.html" aria-label="文档"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#i-book"/></svg></a>
+        </div>
+      </div>
+
+      <div class="footer-cols">
+        <div class="footer-col">
+          <b>产品</b>
+          <a href="index.html#features">核心特性</a>
+          <a href="index.html#bench">性能基准</a>
+          <a href="index.html#plugins">插件生态</a>
+          <a href="index.html#roadmap">路线图</a>
+        </div>
+        <div class="footer-col">
+          <b>文档</b>
+          <a href="docs.html">快速开始</a>
+          <a href="docs.html#config">配置参考</a>
+          <a href="docs.html#cli">CLI 命令</a>
+          <a href="docs.html#plugin-api">插件 API</a>
+        </div>
+        <div class="footer-col">
+          <b>资源</b>
+          <a href="index.html#faq">常见问题</a>
+          <a href="#">更新日志</a>
+          <a href="#">基准测试脚本</a>
+          <a href="#">状态页</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© 2026 Rivet Contributors · 以 MIT 协议开源</span>
+      <span>Rivet 是一个用于演示的开源项目示例站点</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/main.js" defer></script>
+</body>
+</html>

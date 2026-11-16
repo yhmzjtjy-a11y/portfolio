@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500" role="img" aria-label="插件生态中心与外围节点">
+  <defs>
+    <linearGradient id="pgBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0c1428"/>
+      <stop offset="1" stop-color="#191038"/>
+    </linearGradient>
+    <radialGradient id="pgGlow" cx="0.5" cy="0.5" r="0.45">
+      <stop offset="0" stop-color="#7c8cff" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#7c8cff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="pgCore" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7c8cff"/>
+      <stop offset="1" stop-color="#4fd1c5"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="500" fill="url(#pgBg)"/>
+  <rect width="800" height="500" fill="url(#pgGlow)"/>
+
+  <g stroke="#ffffff" stroke-opacity="0.05">
+    <path d="M0 125h800M0 250h800M0 375h800"/>
+    <path d="M200 0v500M400 0v500M600 0v500"/>
+  </g>
+
+  <g transform="translate(400 250)">
+    <g stroke="#ffffff" stroke-opacity="0.22" stroke-width="2">
+      <path d="M0 0 0-150M0 0 128-75M0 0 128 75M0 0 0 150M0 0-128 75M0 0-128-75"/>
+    </g>
+    <g>
+      <rect x="-36" y="-36" width="72" height="72" rx="18" fill="url(#pgCore)"/>
+      <path d="M-16 -10h20a10 10 0 0 1 0 20h-20m0 0 8-8m-8 8 8 8" fill="none" stroke="#0b0d14" stroke-width="4.5"
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <g>
+      <rect x="-26" y="-176" width="52" height="52" rx="14" fill="#7c8cff" fill-opacity="0.9"/>
+      <rect x="-12" y="-156" width="24" height="5" rx="2.5" fill="#0b0d14" opacity="0.75"/>
+      <rect x="-12" y="-144" width="16" height="5" rx="2.5" fill="#0b0d14" opacity="0.55"/>
+    </g>
+    <g>
+      <rect x="102" y="-101" width="52" height="52" rx="14" fill="#a98bff" fill-opacity="0.9"/>
+      <circle cx="128" cy="-75" r="11" fill="none" stroke="#0b0d14" stroke-width="4" opacity="0.75"/>
+    </g>
+    <g>
+      <rect x="102" y="49" width="52" height="52" rx="14" fill="#4fd1c5" fill-opacity="0.9"/>
+      <path d="M118 75h20M128 65v20" stroke="#0b0d14" stroke-width="4.5" stroke-linecap="round" opacity="0.75"/>
+    </g>
+    <g>
+      <rect x="-26" y="124" width="52" height="52" rx="14" fill="#ffb86b" fill-opacity="0.9"/>
+      <path d="M-10 150h20M0 140v20" stroke="#2a1c08" stroke-width="4.5" stroke-linecap="round" opacity="0.8"/>
+    </g>
+    <g>
+      <rect x="-154" y="49" width="52" height="52" rx="14" fill="#4fd1c5" fill-opacity="0.7"/>
+      <path d="M-138 75l8 8 14-16" fill="none" stroke="#0b1a18" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <g>
+      <rect x="-154" y="-101" width="52" height="52" rx="14" fill="#7c8cff" fill-opacity="0.7"/>
+      <path d="M-138 -75h20M-138 -87h12" stroke="#0b0d14" stroke-width="4.5" stroke-linecap="round" opacity="0.7"/>
+    </g>
+    <circle r="196" fill="none" stroke="#ffffff" stroke-opacity="0.07" stroke-width="2" stroke-dasharray="4 12"/>
+  </g>
+
+  <g fill="#ffffff" fill-opacity="0.4">
+    <circle cx="92" cy="104" r="3"/>
+    <circle cx="716" cy="404" r="4"/>
+  </g>
+</svg>
